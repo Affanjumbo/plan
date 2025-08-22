@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Restaurant Website Proposal — .NET + MS SQL</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent-2: #1e40af;
+    --accent-light: #dbeafe;
+    --ok: #059669;
+    --warning: #d97706;
+    --glass: rgba(13,27,59,0.04);
+    --border: rgba(0,0,0,0.06);
+    --gradient-header: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+    --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Header Styles */
+  header {
+    background: var(--gradient-header);
+    color: white;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+  
+  .header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  
+  header h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  
+  header p {
+    margin: 1rem 0 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+  
+  .currency-note {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    font-size: 0.9rem;
+  }
+  
+  /* Navigation */
+  nav {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    padding: 1rem;
+    background: #0f172a;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    box-shadow: var(--shadow-md);
+  }
+  
+  nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+  
+  nav a:hover, nav a:focus {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+  
+  /* Main Content */
+  main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem;
+  }
+  
+  section.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+  }
+  
+  h2 {
+    margin: 0 0 1rem;
+    color: var(--accent-2);
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  h2 i {
+    color: var(--accent);
+    font-size: 1.25rem;
+  }
+  
+  p.lead {
+    color: var(--muted);
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  
+  /* Grid System */
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 900px) {
+    .grid-3, .grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Price Card */
+  .price-card {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--gradient-card);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .price-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .price-card h3 {
+    margin: 0 0 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .price-card h3 i {
+    font-size: 1rem;
+  }
+  
+  .price-figure {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent-2);
+    margin: 0.5rem 0;
+  }
+  
+  .muted {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  /* Cost Table */
+  table.cost {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  table.cost th, table.cost td {
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  table.cost th {
+    background: var(--accent-2);
+    color: white;
+    font-weight: 500;
+  }
+  
+  table.cost tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  
+  table.cost tr.highlight {
+    background-color: var(--accent-light);
+  }
+  
+  table.cost tr.highlight th {
+    background-color: var(--accent-2);
+  }
+  
+  /* Note Box */
+  .note {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    color: var(--accent-2);
+    font-weight: 500;
+  }
+  
+  .ok {
+    color: var(--ok);
+    font-weight: 700;
+  }
+  
+  /* Timeline */
+  .timeline {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  
+  .step {
+    background: white;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    min-width: 180px;
+    flex: 1;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .step h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: var(--accent);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .step h4 i {
+    font-size: 0.9rem;
+  }
+  
+  /* Total Box */
+  .total-box {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, #eef7ff, #f8fbff);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+  }
+  
+  .total-left {
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  
+  .total-right {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--accent-2);
+  }
+  
+  /* Footer */
+  footer {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #e2e8f0;
+    background: var(--gradient-header);
+    margin-top: 2rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Chart container */
+  .chart-wrap {
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+  
+  /* Feature List */
+  .feature-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .feature-list li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .feature-list li i {
+    color: var(--ok);
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+  }
+  
+  /* Domain Options */
+  .domain-option {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    background: white;
+  }
+  
+  .domain-option h3 {
+    margin: 0 0 1rem;
+    color: var(--accent-2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 1.75rem;
+    }
+    
+    header p {
+      font-size: 1rem;
+    }
+    
+    nav {
+      flex-wrap: wrap;
+    }
+    
+    .price-figure {
+      font-size: 1.25rem;
+    }
+    
+    .total-box {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .total-right {
+      font-size: 1.25rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    section.card {
+      padding: 1.5rem;
+    }
+    
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
+  
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .badge-primary {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+  
+  .badge-success {
+    background: rgba(5, 150, 105, 0.1);
+    color: var(--ok);
+  }
+  
+  /* Icon Decorations */
+  .icon-decor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <h1>Restaurant Website Proposal</h1>
+    <p>Professional ASP.NET Core & MS SQL Solution with Complete Hosting Package</p>
+    <div class="currency-note">
+      <i class="fas fa-exchange-alt"></i> PKR conversion rate: 1 USD = PKR 285
+    </div>
+  </div>
+</header>
+
+<nav>
+  <a href="#summary"><i class="fas fa-home"></i> Summary</a>
+  <a href="#pricing"><i class="fas fa-tag"></i> Pricing</a>
+  <a href="#timeline"><i class="fas fa-calendar-alt"></i> Timeline</a>
+  <a href="#features"><i class="fas fa-star"></i> Features</a>
+  <a href="#final"><i class="fas fa-check-circle"></i> Recommendation</a>
+</nav>
+
+<main>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="card">
+    <h2><i class="fas fa-info-circle"></i> Executive Summary</h2>
+    <p class="lead">
+      We will build a secure, fast and future-ready restaurant website using <strong>ASP.NET Core</strong> with <strong>Microsoft SQL Server</strong>. 
+      One domain (either <strong>.com</strong> or <strong>.pk</strong>) will be purchased for <strong>2 years</strong>. Subdomains for admin, POS and customer portal are included free.
+    </p>
+
+    <div class="grid grid-3" style="margin-top:1.5rem">
+      <div class="price-card">
+        <div class="icon-decor">
+          <i class="fas fa-laptop-code"></i>
+        </div>
+        <h3>Main Purpose</h3>
+        <div class="price-figure">Customer Website + Admin Panel</div>
+        <div class="muted">Manage menu, orders, photos, contact info; ready for future online ordering and mobile apps</div>
+      </div>
+
+      <div class="price-card">
+        <div class="icon-decor">
+          <i class="fas fa-server"></i>
+        </div>
+        <h3>Hosting Provider</h3>
+        <div class="price-figure">InterServer (Windows/VPS)</div>
+        <div class="muted">Dedicated hosting tier with MS SQL support (recommended)</div>
+      </div>
+
+      <div class="price-card">
+        <div class="icon-decor">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h3>SSL & Security</h3>
+        <div class="price-figure">Free (Let's Encrypt)</div>
+        <div class="muted">HTTPS enabled for site and all subdomains</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING DETAILS -->
+  <section id="pricing" class="card">
+    <h2><i class="fas fa-tag"></i> Pricing Details</h2>
+    <p class="muted">Currency columns show USD and PKR (PKR = USD × 285). Domain is purchased for <strong>2 years</strong> — its 2-year cost is divided across 24 months so monthly totals are realistic.</p>
+
+    <!-- DOMAIN Options -->
+    <div style="margin-top:1.5rem" class="grid grid-2">
+      <div class="domain-option">
+        <h3><i class="fas fa-globe"></i> Option A — Domain: '.com'</h3>
+        <table class="cost" aria-label=".com cost table">
+          <thead>
+            <tr><th>Item</th><th>USD / Month</th><th>USD / Year</th><th>PKR / Month</th><th>PKR / Year</th></tr>
+          </thead>
+          <tbody>
+            <!-- Domain .com for 2 years -->
+            <tr>
+              <td>Domain (.com) — 2 years</td>
+              <td style="font-weight:600">1.00</td>
+              <td>12.00</td>
+              <td>285</td>
+              <td>3,420</td>
+            </tr>
+            <tr>
+              <td>InterServer Hosting (Windows/VPS) + MS SQL</td>
+              <td style="font-weight:600">20.00</td>
+              <td>240.00</td>
+              <td>5,700</td>
+              <td>68,400</td>
+            </tr>
+            <tr>
+              <td>SSL Certificate (Let's Encrypt)</td>
+              <td>0.00</td>
+              <td>0.00</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+            <tr class="highlight">
+              <th>Total monthly (Option A)</th>
+              <th style="font-weight:800">21.00 USD</th>
+              <th>252.00 USD</th>
+              <th style="font-weight:800">PKR 5,985</th>
+              <th>PKR 71,820</th>
+            </tr>
+            <tr>
+              <td colspan="5" class="muted">Monthly hosting + domain cost: PKR <strong>~6000</strong> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="domain-option">
+        <h3><i class="fas fa-flag"></i> Option B — Domain: '.pk'</h3>
+        <table class="cost" aria-label=".pk cost table">
+          <thead>
+            <tr><th>Item</th><th>USD / Month</th><th>USD / Year</th><th>PKR / Month</th><th>PKR / Year</th></tr>
+          </thead>
+          <tbody>
+            <!-- Domain .pk for 2 years -->
+            <tr>
+              <td>Domain (.pk) — 2 years</td>
+              <td style="font-weight:600">≈ 2.63</td>
+              <td>≈ 31.58</td>
+              <td>750</td>
+              <td>9,000</td>
+            </tr>
+            <tr>
+              <td>InterServer Hosting (Windows/VPS) + MS SQL</td>
+              <td style="font-weight:600">20.00</td>
+              <td>240.00</td>
+              <td>5,700</td>
+              <td>68,400</td>
+            </tr>
+            <tr>
+              <td>SSL Certificate (Let's Encrypt)</td>
+              <td>0.00</td>
+              <td>0.00</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+            <tr class="highlight">
+              <th>Total monthly (Option B)</th>
+              <th style="font-weight:800">≈ 22.63 USD</th>
+              <th>≈ 271.58 USD</th>
+              <th style="font-weight:800">PKR 6,450</th>
+              <th>PKR 77,400</th>
+            </tr>
+            <tr>
+              <td colspan="5" class="muted">Monthly hosting + domain cost: PKR <strong>7500</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Additional Options -->
+    <div style="margin-top:1.5rem" class="grid grid-2">
+      <div class="price-card">
+        <h3><i class="fas fa-database"></i> Optional: Managed Backups & Monitoring</h3>
+        <div class="muted">Daily backups, monitoring and faster support response for the SQL database</div>
+        <div style="margin-top:1rem" class="price-figure">USD 5.00 / month • PKR 1,425 / month</div>
+        <span class="badge badge-success">Recommended</span>
+      </div>
+
+      <div class="price-card">
+        <h3><i class="fas fa-code"></i> One-time Development</h3>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Custom design (mobile-first) and content setup</li>
+          <li><i class="fas fa-check-circle"></i> Admin Panel (add/edit menu, prices, photos)</li>
+          <li><i class="fas fa-check-circle"></i> POS-ready endpoints (for future integration)</li>
+          <li><i class="fas fa-check-circle"></i> Security hardening, backups, basic SEO, speed tuning</li>
+        </ul>
+        <div style="margin-top:1rem" class="total-box">
+          <div class="total-left">One-time Development Fee</div>
+          <div class="total-right">Decided Later</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subdomains Info -->
+    <div style="margin-top:1.5rem; padding: 1.25rem; background: var(--accent-light); border-radius: var(--radius-sm);">
+      <h4><i class="fas fa-link"></i> Subdomains Included at No Extra Cost</h4>
+      <div class="muted" style="margin-top: 0.5rem;">
+        Your package includes these subdomains: <strong>admin.yourdomain.com</strong> (management panel), 
+        <strong>pos.yourdomain.com</strong> (point of sale system), <strong>customers.yourdomain.com</strong> (client portal)
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="card">
+    <h2><i class="fas fa-calendar-alt"></i> Deployment Timeline</h2>
+    <p class="muted">Clear, predictable timeline from start to finish with regular client updates at each stage.</p>
+    
+    <div class="timeline">
+      <div class="step">
+        <h4><i class="fas fa-1"></i> Domain & Hosting</h4>
+        <div class="muted">Purchase domain (2 years) and configure InterServer hosting. (1–2 days)</div>
+      </div>
+      <div class="step">
+        <h4><i class="fas fa-2"></i> Setup Database</h4>
+        <div class="muted">Provision MS SQL, backups and security policies. (1 day)</div>
+      </div>
+      <div class="step">
+        <h4><i class="fas fa-3"></i> Design & Build</h4>
+        <div class="muted">Design pages, admin panel and integrate features. (7–10 days)</div>
+      </div>
+      <div class="step">
+        <h4><i class="fas fa-4"></i> Testing & Launch</h4>
+        <div class="muted">Testing across devices, DNS switch and launch. (2–3 days)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="card">
+    <h2><i class="fas fa-star"></i> What You Get</h2>
+    <p class="muted">Complete package with everything needed for a professional restaurant website.</p>
+    
+    <div class="grid grid-2" style="margin-top:1.5rem">
+      <div>
+        <h3><i class="fas fa-desktop"></i> Website Features</h3>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Fully responsive design (mobile, tablet, desktop)</li>
+          <li><i class="fas fa-check-circle"></i> Homepage with hero section and featured items</li>
+          <li><i class="fas fa-check-circle"></i> Dynamic menu with categories and filtering</li>
+          <li><i class="fas fa-check-circle"></i> Gallery with high-quality food photography</li>
+          <li><i class="fas fa-check-circle"></i> Contact page with map and business hours</li>
+          <li><i class="fas fa-check-circle"></i> About page with restaurant story and team</li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3><i class="fas fa-cog"></i> Management Features</h3>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Secure admin login panel</li>
+          <li><i class="fas fa-check-circle"></i> Menu management (add, edit, categorize items)</li>
+          <li><i class="fas fa-check-circle"></i> Photo gallery management</li>
+          <li><i class="fas fa-check-circle"></i> Business information updates</li>
+          <li><i class="fas fa-check-circle"></i> Special offers/promotions management</li>
+          <li><i class="fas fa-check-circle"></i> POS integration readiness</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div style="margin-top:1.5rem" class="total-box">
+      <div class="total-left">First-year cost (Option A — .com) <div class="muted" style="font-weight:600; margin-top:0.5rem">Hosting + domain (yearly) + one-time dev</div></div>
+      <div class="total-right">PKR <strong>78,000</strong></div>
+    </div>
+
+    <div style="margin-top:1rem" class="total-box">
+      <div class="total-left">First-year cost (Option B — .pk)</div>
+      <div class="total-right">PKR <strong>90,000</strong></div>
+    </div>
+  </section>
+
+  <!-- FINAL RECOMMENDATION -->
+  <section id="final" class="card">
+    <h2><i class="fas fa-check-circle"></i> Final Recommendation</h2>
+    <div class="note">
+      <strong>Recommendation:</strong> Proceed with <strong>ASP.NET Core + Microsoft SQL Server</strong> on InterServer. This is the most reliable, secure and scalable setup for a restaurant that plans online ordering, integrations or a POS in the future. Buy the domain for 2 years (either .com or .pk) and host on the recommended InterServer Windows/VPS tier.
+    </div>
+    <p class="muted" style="margin-top:1rem">We can add your logo and restaurant name to this document before sending to the client.</p>
+    
+    <div style="margin-top:1.5rem; display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f0f9ff; border-radius: var(--radius-sm);">
+      <div style="font-size: 2rem; color: var(--accent);">
+        <i class="fas fa-headset"></i>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 0.25rem;">Ongoing Support Included</h4>
+        <p class="muted" style="margin: 0;">30 days of free support after launch, with optional maintenance packages available</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © 2025 Restaurant Website Proposal — ASP.NET Core & MS SQL • Hosting: InterServer
+</footer>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function(){
+  // Constants (conversion)
+  const RATE = 285; // PKR per USD (fixed)
+  // Numeric values used in calculations
+  const domainComUSDPerYear = 12;
+//   const domainPkPKRPerYear = 9000;
+  const hostingUSDPerMonth = 20;
+  const hostingUSDPerYear  = hostingUSDPerMonth * 12;
+
+  // Calculations for .com (2-year domain cost split monthly)
+  const domainComPKRPerYear = domainComUSDPerYear * RATE;         // PKR/year
+  const domainComPKR2yr = domainComPKRPerYear * 2;
+  const domainComPKRperMonth = domainComPKR2yr / 24;             // spread over 24 months
+  const domainComUSDperMonth = (domainComUSDPerYear * 2) / 24;
+
+  // .pk calculations
+  const domainPkPKRPerYear = domainPkPKRPerYear = domainPkPKRPerYear || 9000; // ensure defined (9000)
+  const domainPkPKR2yr = domainPkPKRPerYear * 2;
+  const domainPkPKRperMonth = domainPkPKR2yr / 24;
+  const domainPkUSDperMonth = (domainPkPKRPerYear / RATE) / 12; // approximate monthly USD
+
+  // Totals .com
+  const netComUSD_month = hostingUSDPerMonth + domainComUSDperMonth;
+  const netComPKR_month = Math.round((hostingUSDPerMonth * RATE) + domainComPKRperMonth);
+
+  // Totals .pk
+  const netPkUSD_month = hostingUSDPerMonth + domainPkUSDperMonth;
+  const netPkPKR_month = Math.round((hostingUSDPerMonth * RATE) + domainPkPKRperMonth);
+
+  // Display first-year totals breakdown (two-year sums shown earlier)
+  // Two-year sums:
+  const hostingPKR_2yr = Math.round(hostingUSDPerMonth * RATE * 24);
+  const domainComPKR_2yr = Math.round(domainComPKR2yr);
+  const domainPkPKR_2yr = Math.round(domainPkPKR2yr);
+  const sumCom_2yr = hostingPKR_2yr + domainComPKR_2yr;
+  const sumPk_2yr = hostingPKR_2yr + domainPkPKR_2yr;
+
+  // Populate summary elements
+  document.getElementById('firstYearCom').textContent = sumCom_2yr.toLocaleString('en-PK');
+  document.getElementById('firstYearPk').textContent = sumPk_2yr.toLocaleString('en-PK');
+
+})();
+</script>
+</body>
+</html>
